@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--
+  剪映草稿历史版本管理器 · 网页版使用说明
+  ------------------------------------------------------------
+  公众号：爱折腾的摄影大叔（lovephoto588）
+  Copyright (c) 2026 爱折腾的摄影大叔（lovephoto588）
+  本项目基于 MIT 协议开源，详见仓库根目录的 LICENSE 文件。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>使用说明 · 剪映草稿历史版本管理器</title>
+<style>
+  :root {
+    --bg: #f4f6f9; --card: #ffffff; --border: #e2e8f0; --text: #1e293b;
+    --muted: #64748b; --primary: #2563eb; --primary-h: #1d4ed8;
+    --danger: #dc2626; --ok: #059669; --warn: #d97706;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 15px/1.75 "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif; min-height: 100vh; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ---------- 头部 ---------- */
+  .hero { text-align: center; padding: 40px 24px 36px; background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 55%, #fff 100%); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 28px; box-shadow: 0 4px 16px rgba(37,99,235,.06); }
+  .hero .logo { width: 64px; height: 64px; margin: 0 auto 14px; background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 6px 16px rgba(37,99,235,.3); }
+  .hero h1 { font-size: 26px; font-weight: 800; letter-spacing: .5px; }
+  .hero p.sub { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .hero .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .hero .badges span { font-size: 12px; font-weight: 600; padding: 3px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--border); color: #475569; }
+
+  /* ---------- 卡片与章节 ---------- */
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 26px 28px; margin-bottom: 22px; box-shadow: 0 1px 3px rgba(15,23,42,.04); }
+  section > h2 { font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  section > h2 .no { width: 28px; height: 28px; border-radius: 8px; background: var(--primary); color: #fff; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  section p { color: #334155; margin-bottom: 10px; }
+  section p:last-child { margin-bottom: 0; }
+  .muted { color: var(--muted); font-size: 13px; }
+
+  /* ---------- 功能网格 ---------- */
+  .feats { display: grid; grid-template-columns: repeat(auto-fit, minmax( 240px, 1fr)); gap: 14px; }
+  .feat { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; transition: .15s; background: #fbfcfe; }
+  .feat:hover { border-color: #bfdbfe; background: #f8fbff; transform: translateY(-1px); }
+  .feat .ic { font-size: 22px; margin-bottom: 8px; }
+  .feat .t { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .feat .d { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+
+  /* ---------- 步骤流 ---------- */
+  .steps { position: relative; margin: 6px 0 2px; }
+  .steps::before { content: ""; position: absolute; left: 17px; top: 18px; bottom: 18px; width: 2px; background: linear-gradient(#2563eb, #7c3aed); border-radius: 2px; opacity: .35; }
+  .step { position: relative; padding: 0 0 22px 52px; }
+  .step:last-child { padding-bottom: 2px; }
+  .step .num { position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; background: #fff; border: 2px solid var(--primary); color: var(--primary); font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 2px 6px rgba(37,99,235,.15); }
+  .step .t { font-weight: 700; font-size: 14.5px; margin-bottom: 3px; padding-top: 6px; }
+  .step .d { font-size: 13px; color: #475569; }
+
+  /* ---------- 代码块 ---------- */
+  .code { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 14px 18px; font: 13px/1.7 Consolas, "Courier New", monospace; margin: 10px 0; overflow-x: auto; }
+  .code .c { color: #7dd3fc; }
+  .code .g { color: #86efac; }
+  .code .cm { color: #64748b; }
+
+  /* ---------- 提示框 ---------- */
+  .tip { border-radius: 10px; padding: 12px 16px; font-size: 13.5px; margin: 12px 0; border: 1px solid; line-height: 1.7; }
+  .tip b { font-weight: 700; }
+  .tip.warn { background: #fffbeb; border-color: #fcd34d; color: #92400e; }
+  .tip.info { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+  .tip.ok { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+  .tip.danger { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+
+  /* ---------- 表格 ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 6px; }
+  th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 700; padding: 8px 12px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.f { font-family: Consolas, "Courier New", monospace; font-size: 12.5px; color: #475569; white-space: nowrap; }
+
+  /* ---------- 标签图例 ---------- */
+  .legend { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 14px; }
+  .tag { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .tag.save { color: #2563eb; background: #eff6ff; }
+  .tag.close { color: #d97706; background: #fffbeb; }
+  .tag.load { color: #64748b; background: #f1f5f9; }
+  .tag.restore { color: #7c3aed; background: #f5f3ff; }
+  .tag.prev { color: #059669; background: #ecfdf5; }
+  .tag.current { color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; }
+
+  /* ---------- FAQ ---------- */
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; background: #fbfcfe; }
+  details summary { cursor: pointer; font-weight: 700; font-size: 14px; list-style: none; display: flex; align-items: center; gap: 8px; }
+  details summary::before { content: "?"; width: 20px; height: 20px; border-radius: 6px; background: #eff6ff; color: var(--primary); font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  details[open] summary::before { content: "✓"; background: #ecfdf5; color: var(--ok); }
+  details .a { font-size: 13.5px; color: #475569; margin-top: 8px; padding-left: 28px; }
+
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 34px; line-height: 1.8; }
+  footer .link { color: var(--primary); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ================= 头部 ================= -->
+  <div class="hero">
+    <div class="logo">🎬</div>
+    <h1>剪映草稿历史版本管理器</h1>
+    <p class="sub">查询剪映 .backup 历史版本 · 网页可视化管理 · 一键安全恢复</p>
+    <div class="badges">
+      <span>🟢 零依赖 · 仅需 Python 3.8+</span>
+      <span>🔒 恢复前自动备份</span>
+      <span>🖥️ 本地运行 · 数据不出机</span>
+    </div>
+  </div>
+
+  <!-- ================= 简介 ================= -->
+  <section>
+    <h2><span class="no">✦</span>这是什么</h2>
+    <p>剪映专业版在编辑草稿时，会把每次自动保存的版本加密存放在草稿目录的 <b>.backup/</b> 文件夹里。这个工具帮你：</p>
+    <div class="feats">
+      <div class="feat"><div class="ic">📜</div><div class="t">查询历史版本</div><div class="d">扫描 .backup 目录，列出全部历史版本的时间、类型、大小与 MD5</div></div>
+      <div class="feat"><div class="ic">🔍</div><div class="t">自动发现根目录</div><div class="d">扫描常见位置与各盘符；深度扫描可遍历盘符，兜底非常规位置</div></div>
+      <div class="feat"><div class="ic">🗑️</div><div class="t">回收站找回</div><div class="d">自动列出剪映回收站中误删的草稿，可像正常草稿一样查看与恢复</div></div>
+      <div class="feat"><div class="ic">👀</div><div class="t">可视化对比</div><div class="d">每个版本与当前版的体积差异一目了然，可按类型筛选</div></div>
+      <div class="feat"><div class="ic">⚡</div><div class="t">一键恢复</div><div class="d">点击按钮即把任意历史版本恢复为当前草稿，全程自动备份</div></div>
+      <div class="feat"><div class="ic">🛡️</div><div class="t">安全防护</div><div class="d">剪映运行时自动锁定、恢复前强制快照、防路径穿越</div></div>
+      <div class="feat"><div class="ic">🧹</div><div class="t">备份清理</div><div class="d">一键清理过旧的自动保存备份，保留最近 N 个，回收空间</div></div>
+      <div class="feat"><div class="ic">↩️</div><div class="t">随时回退</div><div class="d">每次恢复前都会生成"恢复快照"，反悔了再恢复它即可</div></div>
+    </div>
+  </section>
+
+  <!-- ================= 启动 ================= -->
+  <section>
+    <h2><span class="no">1</span>启动方式</h2>
+    <p><b>方式一（推荐）</b>：进入工具目录，双击 <b>start.bat</b>，浏览器会自动提示访问地址。</p>
+    <p><b>方式二（命令行）</b>：</p>
+    <div class="code"><span class="cm"># 默认端口 8620</span><br>python app.py<br><br><span class="cm"># 指定端口</span><br>python app.py <span class="g">--port</span> 9000</div>
+    <p>启动成功后，用浏览器打开：</p>
+    <div class="code"><span class="c">http://127.0.0.1:8620</span></div>
+    <div class="tip info">💡 <b>提示</b>：工具无需安装任何第三方库；stop 服务在命令行按 <b>Ctrl + C</b> 即可。</div>
+  </section>
+
+  <!-- ================= 使用流程 ================= -->
+  <section>
+    <h2><span class="no">2</span>使用流程</h2>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div class="t">确认剪映已关闭</div><div class="d">查看页面右上角状态徽章，显示"剪映未运行 · 可安全恢复"才能执行恢复。如显示运行中，请先完全关闭剪映（包括托盘进程）。</div></div>
+      <div class="step"><div class="num">2</div><div class="t">定位草稿根目录</div><div class="d">页面加载时会自动发现；如草稿在非常规位置，点击「🔍 自动发现」扫描常见位置与各盘符，或「🔎 深度扫描」遍历盘符兜底，点击结果即可扫描。</div></div>
+      <div class="step"><div class="num">3</div><div class="t">选择草稿项目</div><div class="d">点击草稿卡片，查看当前版本信息（大小 / 修改时间 / MD5）与完整的历史版本列表。</div></div>
+      <div class="step"><div class="num">4</div><div class="t">恢复目标版本</div><div class="d">在列表中找到想要的版本，点击「恢复此版本」并在弹窗中确认。随后重新打开剪映即可加载。</div></div>
+    </div>
+    <div class="legend">
+      <span>版本类型图例：</span>
+      <span class="tag save">自动保存</span>
+      <span class="tag close">关闭备份</span>
+      <span class="tag load">打开备份</span>
+      <span class="tag restore">恢复快照</span>
+      <span class="tag prev">上一版本</span>
+      <span class="tag current">当前版本</span>
+    </div>
+  </section>
+
+  <!-- ================= 恢复与回退 ================= -->
+  <section>
+    <h2><span class="no">3</span>恢复与回退</h2>
+    <p>点击「恢复此版本」时，工具会按顺序自动完成三件事：</p>
+    <table>
+      <tr><th style="width:56px">步骤</th><th>动作</th><th>说明</th></tr>
+      <tr><td>①</td><td>检测剪映进程</td><td>运行中则拒绝操作，防止写入冲突</td></tr>
+      <tr><td>②</td><td>备份当前草稿</td><td>生成 <span class="f">YYYYMMDDHHMMSS_restore_&lt;md5&gt;.save.bak</span> 快照</td></tr>
+      <tr><td>③</td><td>覆盖草稿文件</td><td>用所选历史版本写入 draft_content.json</td></tr>
+    </table>
+    <div class="tip ok">↩️ <b>回退方法</b>：每次恢复前生成的"恢复快照"也会出现在版本列表中（紫色标签）。对结果不满意时，找到该快照再次点击「恢复此版本」即可完全回到操作前状态。</div>
+    <div class="tip danger">🗑 <b>删除版本</b>：每行操作列的「删除」按钮可直接删掉不需要的历史版本。<b>删除不可逆、不进回收站</b>，弹窗会显示该版本的类型/时间/大小供确认；删除"恢复快照"会同时放弃对应的回退机会。</div>
+  </section>
+
+  <!-- ================= 文件说明 ================= -->
+  <section>
+    <h2><span class="no">4</span>文件说明</h2>
+    <table>
+      <tr><th>文件</th><th>说明</th></tr>
+      <tr><td class="f">app.py</td><td>全部源码（后端 API + 前端页面，单文件）</td></tr>
+      <tr><td class="f">start.bat</td><td>Windows 双击启动脚本</td></tr>
+      <tr><td class="f">test_api.py</td><td>API 自动化测试（服务启动后运行 <span class="f">python test_api.py</span>）</td></tr>
+      <tr><td class="f">README.md</td><td>Markdown 版说明</td></tr>
+      <tr><td class="f">使用说明.html</td><td>本文件</td></tr>
+    </table>
+  </section>
+
+  <!-- ================= 注意事项 ================= -->
+  <section>
+    <h2><span class="no">5</span>注意事项</h2>
+    <div class="tip danger">⛔ <b>恢复操作务必在剪映完全关闭时进行</b>——包括系统托盘中的剪映进程。工具检测到剪映运行时会自动拒绝恢复，这是防止草稿被覆盖写入的保护机制。</div>
+    <div class="tip warn">🔐 <b>关于加密</b>：剪映草稿内容为加密存储，本工具只做文件级版本管理，不涉及解密；解密由剪映读取 draft_content.json 时通过 crypto_key_store.dat 自动完成。</div>
+    <div class="tip info">🔄 <b>打开后缓存刷新</b>：恢复后打开剪映，草稿的封面、时长等缓存信息会自动刷新，短暂显示旧信息属正常现象。</div>
+    <div class="tip warn">🧹 <b>清理备份</b>：版本列表右上角的「清理旧备份」按钮可清理过旧的自动保存（保留最近 N 个），清理只删除 <b>自动保存</b> 类型，不会动关闭/打开备份、恢复快照和当前版本。</div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section>
+    <h2><span class="no">?</span>常见问题</h2>
+    <details>
+      <summary>找不到草稿根目录怎么办？</summary>
+      <div class="a">点击「🔍 自动发现」会扫描常见位置（用户目录、各盘符根等）；仍找不到时用「🔎 深度扫描」遍历各盘符（限深 5 层、跳过系统目录，通常 1 分钟内）。发现的结果会以卡片形式列出，点击即扫描。</div>
+    </details>
+    <details>
+      <summary>误删的草稿能找回吗？</summary>
+      <div class="a">能。剪映删除草稿时会移入根目录下的 .recycle_bin 回收站。扫描草稿后，列表底部会显示带 🗑 标记的回收站草稿，可以查看其历史版本并恢复；确认无误后把草稿文件夹移出 .recycle_bin（或在剪映中还原）即可正常打开。</div>
+    </details>
+    <details open>
+      <summary>为什么点击「恢复此版本」没有反应？</summary>
+      <div class="a">页面右上角显示"剪映运行中 · 已锁定恢复"时，所有恢复操作都会被禁止。请先完全关闭剪映（含托盘进程），状态变为绿色后重试。</div>
+    </details>
+    <details>
+      <summary>恢复后打开剪映，内容不对怎么办？</summary>
+      <div class="a">先关闭剪映，回到工具中找到刚才生成的「恢复快照」（紫色标签），再次点击恢复即可回到操作前的草稿状态。</div>
+    </details>
+    <details>
+      <summary>历史版本体积差了几十倍，哪个是完整的？</summary>
+      <div class="a">"上一版本"（draft_content.json.bak）和体积最大的「自动保存」版本通常内容最全。列表中每个版本都标注了与当前版的差异百分比，可作为参考。</div>
+    </details>
+    <details>
+      <summary>可以管理其他电脑上的草稿吗？</summary>
+      <div class="a">可以。在「扫描草稿」输入框中填写任意包含草稿的目录路径（草稿目录的标志是含有 draft_content.json 的文件夹），点击扫描即可。</div>
+    </details>
+    <details>
+      <summary>端口被占用怎么办？</summary>
+      <div class="a">用命令行方式启动并换一个端口，例如 <span class="f">python app.py --port 9000</span>，然后访问 <span class="f">http://127.0.0.1:9000</span>。</div>
+    </details>
+  </section>
+
+  <footer>
+    剪映草稿历史版本管理器 · 本地运行，数据不出机<br>
+    默认访问地址 <span class="link">http://127.0.0.1:8620</span> · 如遇问题请优先查看「常见问题」<br>
+    <b>公众号：爱折腾的摄影大叔（lovephoto588）</b> ·
+    Copyright (c) 2026 · 基于 MIT 协议开源
+  </footer>
+
+</div>
+</body>
+</html>
