@@ -9,8 +9,6 @@ rem ============================================================
 chcp 65001 >nul
 title Jianying Draft History Manager
 cd /d "%~dp0"
-rem 优先使用 WorkBuddy 内置 Python，找不到时回退到系统 python
-set "PY=C:\Users\Administrator\.workbuddy\binaries\python\versions\3.13.12\python.exe"
 if not exist "%PY%" set "PY=python"
 echo Starting Jianying Draft History Manager...
 "%PY%" app.py --port 8620
